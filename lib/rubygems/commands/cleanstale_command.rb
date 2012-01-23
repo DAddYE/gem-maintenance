@@ -1,29 +1,36 @@
 require 'rubygems/command'
 
-class Gem::Commands::StaleCommand < Gem::Command
+class Gem::Commands::CleanstaleCommand < Gem::Command
   def initialize
-    super('cleanstale', 'remove gems without access from 1 month')
+    super('cleanstale', 'Remove gems without a given access time')
+  end
+
+  def arguments
+    "DAYS        number of days to check, default 30"
   end
 
   def usage # :nodoc:
-    "#{program_name}"
+    "#{program_name} [DAYS]"
   end
 
   def execute
+    days = get_one_optional_argument || '30'
+    say "Querying for gems without access from #{days} days..."
     gem_to_atime = {}
     Gem::Specification.each do |spec|
-      name = spec.full_name
+      key = { :name => spec.name, :version => spec.version }
       Dir["#{spec.full_gem_path}/**/*.*"].each do |file|
         next if File.directory?(file)
         stat = File.stat(file)
-        gem_to_atime[name] ||= stat.atime
-        gem_to_atime[name] = stat.atime if gem_to_atime[name] < stat.atime
+        gem_to_atime[key] ||= stat.atime
+        gem_to_atime[key] = stat.atime if gem_to_atime[key] < stat.atime
       end
     end
 
-    gem_to_atime.sort_by { |_, atime| atime }.each do |name, atime|
-      break if (Time.now.to_i-atime.to_i) > 3600 * 24 * 30
-      say "name at #{atime.strftime '%c'}"
+    gem_to_atime.sort_by { |_, atime| atime }.each do |spec, atime|
+      break unless (Time.now.to_i-atime.to_i) > 3600 * 24 * days.to_i
+      say "#{spec[:name]} #{spec[:version]} last access was on #{atime.strftime '%d/%m/%Y at %H:%M'}"
+      system "gem uninstall #{spec[:name]} #{spec[:version]}"
     end
   end
 end

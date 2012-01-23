@@ -9,5 +9,5 @@ Gem::Specification.new do |gem|
   gem.files         = `git ls-files`.split("\n")
   gem.name          = "gem-maintenance"
   gem.require_paths = ["lib"]
-  gem.version       = '0.1.0'
+  gem.version       = '0.1.1'
 end

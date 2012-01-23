@@ -31,6 +31,7 @@ class Gem::Commands::CleanstaleCommand < Gem::Command
       break unless (Time.now.to_i-atime.to_i) > 3600 * 24 * days.to_i
       say "#{spec[:name]} #{spec[:version]} last access was on #{atime.strftime '%d/%m/%Y at %H:%M'}"
       cmd = "gem uninstall #{spec[:name]} -v #{spec[:version]}"
+      say cmd
       system cmd
     end
   end

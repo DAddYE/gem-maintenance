@@ -4,7 +4,7 @@ Gem::Specification.new do |gem|
   gem.email         = ["d.dagostino@lipsiasoft.com"]
   gem.description   = "Maintenance tasks for your rubygems"
   gem.summary       = "Maintenance tasks for your rubygems"
-  gem.homepage      = ""
+  gem.homepage      = "https://github.com/DAddYE/gem-maintenance"
 
   gem.files         = `git ls-files`.split("\n")
   gem.name          = "gem-maintenance"
